@@ -1,9 +1,32 @@
+function PurchaseButton() {
+  const [loading, setLoading] = useState(false)
+  async function handlePurchase() {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/checkout', { method: 'POST' })
+      const data = await res.json()
+      if (data.url) window.location.href = data.url
+    } catch (err) {
+      setLoading(false)
+    }
+  }
+  return (
+    <button onClick={handlePurchase} disabled={loading} style={{
+      background: 'var(--ink)', color: 'var(--white)', padding: '14px 32px',
+      borderRadius: '8px', fontSize: '15px', fontWeight: 700, border: 'none', cursor: 'pointer',
+      opacity: loading ? 0.7 : 1
+    }}>
+      {loading ? 'Redirecting to payment…' : '⚡ Purchase AI Package — €499'}
+    </button>
+  )
+}
+
 'use client'
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase'
 
-export default function ProjectClient({ project, outputs, questions }: {
-  project: any, outputs: any[], questions: any[]
+export default function ProjectClient({ project, outputs, questions, paid }: {
+  project: any, outputs: any[], questions: any[], paid: boolean
 }) {
   const [generating, setGenerating] = useState(false)
   const [genError, setGenError] = useState('')
@@ -27,6 +50,10 @@ export default function ProjectClient({ project, outputs, questions }: {
         body: JSON.stringify({ projectId: project.id })
       })
       const data = await res.json()
+      if (res.status === 402) {
+        window.location.href = '/dashboard?upgrade=true'
+        return
+      }
       if (!res.ok) throw new Error(data.error || 'Generation failed')
       setLocalOutputs(data.outputs)
       window.location.reload()
@@ -119,30 +146,48 @@ export default function ProjectClient({ project, outputs, questions }: {
           </div>
         </div>
 
-        {/* Generate button */}
+        {/* Generate button / payment gate */}
         {!hasOutputs && (
-          <div style={{ background: 'var(--ink)', borderRadius: '12px', padding: '32px', textAlign: 'center', marginBottom: '24px' }}>
-            <div style={{ fontFamily: '"Instrument Serif", serif', fontSize: '22px', color: 'var(--white)', marginBottom: '8px' }}>
-              Ready to generate your documents
-            </div>
-            <p style={{ fontSize: '14px', color: 'rgba(255,255,255,.5)', marginBottom: '24px', lineHeight: 1.7 }}>
-              We'll generate your FMEA report, project charter, and EVT/DVT/PVT build timeline<br />from your uploaded documents. This takes 1–2 minutes.
-            </p>
-            {genError && (
-              <div style={{ background: 'rgba(184,50,50,.15)', border: '1px solid rgba(184,50,50,.3)', borderRadius: '7px', padding: '10px 14px', marginBottom: '16px', fontSize: '13px', color: '#ef9a9a' }}>
-                {genError}
+          paid ? (
+            <div style={{ background: 'var(--ink)', borderRadius: '12px', padding: '32px', textAlign: 'center', marginBottom: '24px' }}>
+              <div style={{ fontFamily: '"Instrument Serif", serif', fontSize: '22px', color: 'var(--white)', marginBottom: '8px' }}>
+                Ready to generate your documents
               </div>
-            )}
-            <button onClick={handleGenerate} disabled={generating} style={{
-              background: 'var(--amber)', color: 'var(--ink)', padding: '14px 32px',
-              borderRadius: '8px', fontSize: '15px', fontWeight: 700, border: 'none',
-              opacity: generating ? 0.7 : 1, display: 'inline-flex', alignItems: 'center', gap: '10px'
-            }}>
-              {generating ? (
-                <><span style={{ display: 'inline-block', animation: 'spin 1s linear infinite', fontSize: '16px' }}>⏳</span> Generating… this takes 1–2 minutes</>
-              ) : '⚡ Generate FMEA, Charter & Timeline'}
-            </button>
-          </div>
+              <p style={{ fontSize: '14px', color: 'rgba(255,255,255,.5)', marginBottom: '24px', lineHeight: 1.7 }}>
+                We'll generate your FMEA report, project charter, and EVT/DVT/PVT build timeline<br />from your uploaded documents. This takes 1–2 minutes.
+              </p>
+              {genError && (
+                <div style={{ background: 'rgba(184,50,50,.15)', border: '1px solid rgba(184,50,50,.3)', borderRadius: '7px', padding: '10px 14px', marginBottom: '16px', fontSize: '13px', color: '#ef9a9a' }}>
+                  {genError}
+                </div>
+              )}
+              <button onClick={handleGenerate} disabled={generating} style={{
+                background: 'var(--amber)', color: 'var(--ink)', padding: '14px 32px',
+                borderRadius: '8px', fontSize: '15px', fontWeight: 700, border: 'none',
+                opacity: generating ? 0.7 : 1, display: 'inline-flex', alignItems: 'center', gap: '10px'
+              }}>
+                {generating ? (
+                  <><span style={{ display: 'inline-block', animation: 'spin 1s linear infinite', fontSize: '16px' }}>⏳</span> Generating… this takes 1–2 minutes</>
+                ) : '⚡ Generate FMEA, Charter & Timeline'}
+              </button>
+            </div>
+          ) : (
+            <div style={{ background: 'var(--amber-bg)', border: '1px solid var(--amber-border, #f0c878)', borderRadius: '12px', padding: '32px', textAlign: 'center', marginBottom: '24px' }}>
+              <div style={{ fontSize: '36px', marginBottom: '16px' }}>🔒</div>
+              <div style={{ fontFamily: '"Instrument Serif", serif', fontSize: '22px', color: 'var(--ink)', marginBottom: '8px' }}>
+                Purchase the AI Package to generate
+              </div>
+              <p style={{ fontSize: '14px', color: 'var(--mid)', marginBottom: '24px', lineHeight: 1.7, maxWidth: '420px', margin: '0 auto 24px' }}>
+                Your project is set up and ready. Purchase the AI Package to generate your FMEA report, project charter, and build timeline.
+              </p>
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '16px' }}>
+                <PurchaseButton />
+              </div>
+              <div style={{ fontSize: '12px', color: 'var(--mid)' }}>
+                €499 · One-time payment · 48h delivery · 10 refinement questions included
+              </div>
+            </div>
+          )
         )}
 
         {/* Outputs */}

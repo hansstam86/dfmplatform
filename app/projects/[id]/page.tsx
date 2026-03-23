@@ -28,5 +28,11 @@ export default async function ProjectPage({ params }: { params: { id: string } }
     .eq('project_id', params.id)
     .order('created_at', { ascending: true })
 
-  return <ProjectClient project={project} outputs={outputs || []} questions={questions || []} />
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('paid')
+    .eq('id', user.id)
+    .single()
+
+  return <ProjectClient project={project} outputs={outputs || []} questions={questions || []} paid={profile?.paid ?? false} />
 }
