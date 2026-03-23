@@ -50,7 +50,7 @@ export default function ProjectClient({ project, outputs, questions }: {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed')
       setLocalQuestions(prev => [...prev, data.question])
-      setQuestionsUsed(prev => prev + 1)
+      setQuestionsUsed((prev: number) => prev + 1)
       setQuestion('')
     } catch (err: any) {
       alert(err.message)
