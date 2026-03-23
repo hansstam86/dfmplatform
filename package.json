@@ -14,7 +14,8 @@
     "@supabase/supabase-js": "^2.43.0",
     "@supabase/ssr": "^0.3.0",
     "@anthropic-ai/sdk": "^0.24.0",
-    "@react-pdf/renderer": "^3.4.4"
+    "@react-pdf/renderer": "^3.4.4",
+    "stripe": "^14.25.0"
   },
   "devDependencies": {
     "typescript": "^5",
