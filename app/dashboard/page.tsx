@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import PurchaseButton from './PurchaseButton'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 
 export default async function DashboardPage() {
@@ -11,6 +12,14 @@ export default async function DashboardPage() {
     .select('*')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('paid, package, paid_at')
+    .eq('id', user.id)
+    .single()
+
+  const isPaid = profile?.paid ?? false
 
   const projectCount = projects?.length ?? 0
   const maxProjects = 5
@@ -33,6 +42,27 @@ export default async function DashboardPage() {
       </nav>
 
       <div style={{ maxWidth: '900px', margin: '0 auto', padding: '48px 40px' }}>
+        {/* Upgrade banner for unpaid users */}
+        {!isPaid && (
+          <div style={{ background: 'var(--ink)', borderRadius: '12px', padding: '20px 24px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, minWidth: '240px' }}>
+              <div style={{ fontFamily: '"Instrument Serif", serif', fontSize: '18px', color: 'var(--white)', marginBottom: '4px' }}>Ready to generate your documents?</div>
+              <div style={{ fontSize: '13px', color: 'rgba(255,255,255,.5)', lineHeight: 1.65 }}>Purchase the AI Package — FMEA report, project charter, and build timeline from your PRD and BOM. €499 one-time.</div>
+            </div>
+            <PurchaseButton />
+          </div>
+        )}
+
+        {/* Paid confirmation */}
+        {isPaid && (
+          <div style={{ background: 'var(--green-bg)', border: '1px solid var(--green-border, #b8ddc8)', borderRadius: '10px', padding: '12px 18px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ fontSize: '16px' }}>✅</span>
+            <span style={{ fontSize: '13px', color: 'var(--green)' }}>
+              <strong>AI Package active</strong> — Generate documents on any project below.
+            </span>
+          </div>
+        )}
+
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '36px', flexWrap: 'wrap', gap: '16px' }}>
           <div>
