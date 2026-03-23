@@ -12,6 +12,17 @@ export async function POST(req: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 })
 
+    // Check payment
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('paid')
+      .eq('id', user.id)
+      .single()
+
+    if (!profile?.paid) {
+      return NextResponse.json({ error: 'PAYMENT_REQUIRED', message: 'Please purchase the AI Package to generate documents.' }, { status: 402 })
+    }
+
     // Get project and documents
     const { data: project } = await supabase
       .from('projects')
