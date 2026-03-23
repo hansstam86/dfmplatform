@@ -1,3 +1,8 @@
+'use client'
+import { useState } from 'react'
+import { createClient } from '@/lib/supabase'
+
+
 function PurchaseButton() {
   const [loading, setLoading] = useState(false)
   async function handlePurchase() {
@@ -6,9 +11,7 @@ function PurchaseButton() {
       const res = await fetch('/api/checkout', { method: 'POST' })
       const data = await res.json()
       if (data.url) window.location.href = data.url
-    } catch (err) {
-      setLoading(false)
-    }
+    } catch { setLoading(false) }
   }
   return (
     <button onClick={handlePurchase} disabled={loading} style={{
@@ -20,10 +23,6 @@ function PurchaseButton() {
     </button>
   )
 }
-
-'use client'
-import { useState } from 'react'
-import { createClient } from '@/lib/supabase'
 
 export default function ProjectClient({ project, outputs, questions, paid }: {
   project: any, outputs: any[], questions: any[], paid: boolean
