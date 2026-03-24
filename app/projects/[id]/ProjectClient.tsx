@@ -172,6 +172,7 @@ export default function ProjectClient({ project, outputs, paid, maxECRs, ecrUsed
   }
 
   const hasOutputs = localOutputs.length > 0
+  const prd = localOutputs.find((o: any) => o.type === 'prd')
   const fmea = localOutputs.find((o: any) => o.type === 'fmea')
   const charter = localOutputs.find((o: any) => o.type === 'charter')
   const timeline = localOutputs.find((o: any) => o.type === 'timeline')
@@ -287,8 +288,9 @@ export default function ProjectClient({ project, outputs, paid, maxECRs, ecrUsed
         {hasOutputs && (
           <div style={{ marginBottom: '24px' }}>
             <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '10px', letterSpacing: '.16em', textTransform: 'uppercase', color: 'var(--light)', marginBottom: '14px' }}>Generated Documents</div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: `repeat(${prd ? 4 : 3}, 1fr)`, gap: '12px' }}>
               {[
+                ...(prd ? [{ output: prd, label: 'PRD', icon: '📄', type: 'prd' }] : []),
                 { output: fmea, label: 'FMEA Report', icon: '⚠️', type: 'fmea' },
                 { output: charter, label: 'Project Charter', icon: '📋', type: 'charter' },
                 { output: timeline, label: 'Build Timeline', icon: '📅', type: 'timeline' },
