@@ -22,17 +22,24 @@ export default async function ProjectPage({ params }: { params: { id: string } }
     .eq('project_id', params.id)
     .order('created_at', { ascending: false })
 
-  const { data: questions } = await supabase
-    .from('questions')
-    .select('*')
-    .eq('project_id', params.id)
-    .order('created_at', { ascending: true })
-
   const { data: profile } = await supabase
     .from('profiles')
-    .select('paid')
+    .select('paid, package, ecr_used')
     .eq('id', user.id)
     .single()
 
-  return <ProjectClient project={project} outputs={outputs || []} questions={questions || []} paid={profile?.paid ?? false} />
+  const isPaid = profile?.paid ?? false
+  const pkg = profile?.package || 'ai'
+  const maxECRs = pkg === 'prd' ? 2 : 5
+  const ecrUsed = pkg === 'prd' ? (project.prd_ecr_used ?? 0) : (profile?.ecr_used ?? 0)
+
+  return (
+    <ProjectClient
+      project={project}
+      outputs={outputs || []}
+      paid={isPaid}
+      maxECRs={maxECRs}
+      ecrUsed={ecrUsed}
+    />
+  )
 }

@@ -4,7 +4,6 @@ import { createClient } from '@supabase/supabase-js'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2023-10-16' })
 
-// Use service role client for webhook (bypasses RLS)
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -25,26 +24,41 @@ export async function POST(req: NextRequest) {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
     const userId = session.metadata?.user_id
+    const pkg = session.metadata?.package || 'ai'
+    const isUpgrade = session.metadata?.is_upgrade === 'true'
 
     if (userId) {
+      const updateData: any = {
+        id: userId,
+        email: session.customer_email,
+        paid: true,
+        stripe_customer_id: session.customer as string,
+        stripe_session_id: session.id,
+        paid_at: new Date().toISOString(),
+        package: pkg,
+      }
+
+      // If PRD package — set prd_credit true, limit to 1 project
+      if (pkg === 'prd') {
+        updateData.prd_credit = true
+        updateData.ecr_used = 0
+      }
+
+      // If AI upgrade — keep prd_credit, upgrade package
+      if (isUpgrade) {
+        updateData.prd_credit = true
+      }
+
       const { error } = await supabaseAdmin
         .from('profiles')
-        .upsert({
-          id: userId,
-          email: session.customer_email,
-          paid: true,
-          stripe_customer_id: session.customer as string,
-          stripe_session_id: session.id,
-          paid_at: new Date().toISOString(),
-          package: session.metadata?.package || 'ai',
-        })
+        .upsert(updateData)
 
       if (error) {
         console.error('Supabase update error:', error)
         return NextResponse.json({ error: 'Database update failed' }, { status: 500 })
       }
 
-      console.log(`✅ Payment confirmed for user ${userId}`)
+      console.log(`Payment confirmed: user=${userId} package=${pkg} upgrade=${isUpgrade}`)
     }
   }
 

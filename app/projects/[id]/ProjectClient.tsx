@@ -24,20 +24,119 @@ function PurchaseButton() {
   )
 }
 
-export default function ProjectClient({ project, outputs, questions, paid }: {
-  project: any, outputs: any[], questions: any[], paid: boolean
+
+function ECRSection({ projectId, outputs, maxECRs, ecrUsed, setOutputs }: {
+  projectId: string, outputs: any[], maxECRs: number, ecrUsed: number, setOutputs: (o: any[]) => void
+}) {
+  const [selectedDoc, setSelectedDoc] = useState(outputs[0]?.type || 'fmea')
+  const [instruction, setInstruction] = useState('')
+  const [applying, setApplying] = useState(false)
+  const [error, setError] = useState('')
+  const [localECRUsed, setLocalECRUsed] = useState(ecrUsed)
+  const ecrLeft = maxECRs - localECRUsed
+
+  async function handleECR(e: React.FormEvent) {
+    e.preventDefault()
+    if (!instruction.trim() || ecrLeft <= 0) return
+    setApplying(true)
+    setError('')
+    try {
+      const res = await fetch('/api/ecr', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId, documentType: selectedDoc, instruction: instruction.trim() })
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'ECR failed')
+      // Update outputs locally
+      setOutputs(outputs.map((o: any) => o.type === selectedDoc ? { ...o, content: data.updatedContent } : o))
+      setLocalECRUsed(prev => prev + 1)
+      setInstruction('')
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setApplying(false)
+    }
+  }
+
+  const docOptions = outputs.map((o: any) => ({ type: o.type, label: { fmea: 'FMEA Report', charter: 'Project Charter', timeline: 'Build Timeline', prd: 'PRD' }[o.type] || o.type }))
+
+  return (
+    <div style={{ background: 'var(--white)', border: '1px solid var(--border)', borderRadius: '12px', padding: '28px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+        <div>
+          <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '10px', letterSpacing: '.16em', textTransform: 'uppercase' as const, color: 'var(--light)', marginBottom: '4px' }}>Engineering Change Requests</div>
+          <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--ink)' }}>Request a revision to any document</div>
+        </div>
+        <div style={{
+          fontSize: '11px', fontFamily: '"DM Mono", monospace', letterSpacing: '.1em',
+          padding: '4px 12px', borderRadius: '20px',
+          background: ecrLeft > 2 ? 'var(--green-bg)' : ecrLeft > 0 ? 'var(--amber-bg)' : 'var(--red-bg)',
+          color: ecrLeft > 2 ? 'var(--green)' : ecrLeft > 0 ? '#a06c10' : 'var(--red)',
+          border: `1px solid ${ecrLeft > 2 ? '#b8ddc8' : ecrLeft > 0 ? '#f0c878' : '#f0b8b8'}`
+        }}>
+          {ecrLeft} ECR{ecrLeft !== 1 ? 's' : ''} remaining
+        </div>
+      </div>
+
+      {ecrLeft > 0 ? (
+        <form onSubmit={handleECR} style={{ display: 'flex', flexDirection: 'column' as const, gap: '12px' }}>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' as const }}>
+            {docOptions.map((d: any) => (
+              <button
+                key={d.type}
+                type="button"
+                onClick={() => setSelectedDoc(d.type)}
+                style={{
+                  padding: '7px 16px', borderRadius: '20px', fontSize: '13px', fontWeight: 600,
+                  border: `1px solid ${selectedDoc === d.type ? 'var(--amber)' : 'var(--border)'}`,
+                  background: selectedDoc === d.type ? 'var(--amber-bg)' : 'var(--cream)',
+                  color: selectedDoc === d.type ? '#a06c10' : 'var(--mid)',
+                  cursor: 'pointer'
+                }}
+              >
+                {d.label}
+              </button>
+            ))}
+          </div>
+          <textarea
+            value={instruction}
+            onChange={e => setInstruction(e.target.value)}
+            placeholder={`Describe what you want changed in the ${selectedDoc.toUpperCase()}… e.g. "Add a failure mode for the GPS antenna coexistence with BLE" or "Change the DVT duration to 10 weeks"`}
+            style={{ padding: '12px 14px', border: '1px solid var(--border)', borderRadius: '8px', background: 'var(--cream)', fontSize: '14px', resize: 'vertical' as const, minHeight: '90px', outline: 'none', fontFamily: 'var(--font-sans)' }}
+          />
+          {error && (
+            <div style={{ padding: '10px 14px', background: 'var(--red-bg)', border: '1px solid #f0b8b8', borderRadius: '7px', fontSize: '13px', color: 'var(--red)' }}>
+              {error}
+            </div>
+          )}
+          <button type="submit" disabled={applying || !instruction.trim()} style={{
+            background: 'var(--amber)', color: 'var(--ink)', padding: '11px 22px', border: 'none',
+            borderRadius: '8px', fontSize: '14px', fontWeight: 700, cursor: 'pointer',
+            opacity: applying || !instruction.trim() ? 0.6 : 1, alignSelf: 'flex-start' as const
+          }}>
+            {applying ? '⏳ Applying ECR…' : '↻ Apply Change Request'}
+          </button>
+        </form>
+      ) : (
+        <div style={{ padding: '16px', background: 'var(--cream)', borderRadius: '8px', fontSize: '13px', color: 'var(--mid)', textAlign: 'center' as const }}>
+          All {maxECRs} ECRs used for this project.{' '}
+          <a href="mailto:hans.stam@gmail.com?subject=Additional ECRs needed" style={{ color: 'var(--amber)', fontWeight: 600 }}>
+            Contact Hans for additional revisions →
+          </a>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default function ProjectClient({ project, outputs, paid, maxECRs, ecrUsed }: {
+  project: any, outputs: any[], paid: boolean, maxECRs: number, ecrUsed: number
 }) {
   const [generating, setGenerating] = useState(false)
   const [genError, setGenError] = useState('')
-  const [question, setQuestion] = useState('')
-  const [asking, setAsking] = useState(false)
   const [localOutputs, setLocalOutputs] = useState(outputs)
-  const [localQuestions, setLocalQuestions] = useState(questions)
-  const [questionsUsed, setQuestionsUsed] = useState(project.questions_used ?? 0)
   const supabase = createClient()
-
-  const MAX_QUESTIONS = 10
-  const questionsLeft = MAX_QUESTIONS - questionsUsed
 
   async function handleGenerate() {
     setGenerating(true)
@@ -60,28 +159,6 @@ export default function ProjectClient({ project, outputs, questions, paid }: {
       setGenError(err.message)
     } finally {
       setGenerating(false)
-    }
-  }
-
-  async function handleQuestion(e: React.FormEvent) {
-    e.preventDefault()
-    if (!question.trim() || questionsLeft <= 0) return
-    setAsking(true)
-    try {
-      const res = await fetch('/api/question', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ projectId: project.id, question: question.trim() })
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Failed')
-      setLocalQuestions(prev => [...prev, data.question])
-      setQuestionsUsed((prev: number) => prev + 1)
-      setQuestion('')
-    } catch (err: any) {
-      alert(err.message)
-    } finally {
-      setAsking(false)
     }
   }
 
@@ -231,71 +308,9 @@ export default function ProjectClient({ project, outputs, questions, paid }: {
           </div>
         )}
 
-        {/* Q&A Section */}
+        {/* ECR Section */}
         {hasOutputs && (
-          <div style={{ background: 'var(--white)', border: '1px solid var(--border)', borderRadius: '12px', padding: '28px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
-              <div>
-                <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '10px', letterSpacing: '.16em', textTransform: 'uppercase', color: 'var(--light)', marginBottom: '4px' }}>Refinement Questions</div>
-                <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--ink)' }}>Ask Hans anything about your documents</div>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{
-                  fontSize: '11px', fontFamily: '"DM Mono", monospace', letterSpacing: '.1em',
-                  padding: '4px 12px', borderRadius: '20px',
-                  background: questionsLeft > 3 ? 'var(--green-bg)' : questionsLeft > 0 ? 'var(--amber-bg)' : 'var(--red-bg)',
-                  color: questionsLeft > 3 ? 'var(--green)' : questionsLeft > 0 ? '#a06c10' : 'var(--red)',
-                  border: `1px solid ${questionsLeft > 3 ? '#b8ddc8' : questionsLeft > 0 ? '#f0c878' : '#f0b8b8'}`
-                }}>
-                  {questionsLeft} question{questionsLeft !== 1 ? 's' : ''} remaining
-                </div>
-              </div>
-            </div>
-
-            {/* Previous Q&A */}
-            {localQuestions.length > 0 && (
-              <div style={{ marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {localQuestions.map((q: any) => (
-                  <div key={q.id}>
-                    <div style={{ display: 'flex', gap: '10px', marginBottom: '8px' }}>
-                      <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'var(--amber-bg)', border: '1px solid #f0c878', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', flexShrink: 0 }}>You</div>
-                      <div style={{ background: 'var(--cream)', padding: '10px 14px', borderRadius: '8px', fontSize: '14px', flex: 1 }}>{q.question}</div>
-                    </div>
-                    {q.answer && (
-                      <div style={{ display: 'flex', gap: '10px' }}>
-                        <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', color: 'var(--amber)', flexShrink: 0, fontWeight: 700 }}>H</div>
-                        <div style={{ background: 'var(--white)', border: '1px solid var(--border)', padding: '12px 16px', borderRadius: '8px', fontSize: '14px', flex: 1, lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{q.answer}</div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Ask question form */}
-            {questionsLeft > 0 ? (
-              <form onSubmit={handleQuestion} style={{ display: 'flex', gap: '8px' }}>
-                <input
-                  type="text" value={question} onChange={e => setQuestion(e.target.value)}
-                  placeholder="Ask about your FMEA, charter, or timeline…"
-                  style={{ flex: 1, padding: '10px 14px', border: '1px solid var(--border)', borderRadius: '7px', background: 'var(--cream)', outline: 'none', fontSize: '14px' }}
-                />
-                <button type="submit" disabled={asking || !question.trim()} style={{
-                  background: 'var(--amber)', color: 'var(--ink)', padding: '10px 20px', border: 'none',
-                  borderRadius: '7px', fontSize: '14px', fontWeight: 700, opacity: asking || !question.trim() ? 0.6 : 1, whiteSpace: 'nowrap'
-                }}>
-                  {asking ? 'Asking…' : 'Ask →'}
-                </button>
-              </form>
-            ) : (
-              <div style={{ padding: '16px', background: 'var(--cream)', borderRadius: '8px', fontSize: '13px', color: 'var(--mid)', textAlign: 'center' }}>
-                You've used all 10 refinement questions for this project.{' '}
-                <a href="mailto:hans.stam@gmail.com?subject=More questions for my DFM project" style={{ color: 'var(--amber)', fontWeight: 600 }}>
-                  Contact Hans for further review →
-                </a>
-              </div>
-            )}
-          </div>
+          <ECRSection projectId={project.id} outputs={localOutputs} maxECRs={maxECRs} ecrUsed={ecrUsed} setOutputs={setLocalOutputs} />
         )}
 
       </div>

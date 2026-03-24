@@ -21,6 +21,7 @@ export default async function DashboardPage() {
     .single()
 
   const isPaid = profile?.paid ?? false
+  const profileData = profile
 
   const projectCount = projects?.length ?? 0
   const maxProjects = 5
@@ -41,21 +42,61 @@ export default async function DashboardPage() {
       <div style={{ maxWidth: '900px', margin: '0 auto', padding: '48px 40px' }}>
         {/* Upgrade banner for unpaid users */}
         {!isPaid && (
-          <div style={{ background: 'var(--ink)', borderRadius: '12px', padding: '20px 24px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-            <div style={{ flex: 1, minWidth: '240px' }}>
-              <div style={{ fontFamily: '"Instrument Serif", serif', fontSize: '18px', color: 'var(--white)', marginBottom: '4px' }}>Ready to generate your documents?</div>
-              <div style={{ fontSize: '13px', color: 'rgba(255,255,255,.5)', lineHeight: 1.65 }}>Purchase the AI Package — FMEA report, project charter, and build timeline from your PRD and BOM. €499 one-time.</div>
+          <div style={{ marginBottom: '24px' }}>
+            <div style={{ background: 'var(--ink)', borderRadius: '12px', padding: '24px 28px', marginBottom: '12px' }}>
+              <div style={{ fontFamily: '"Instrument Serif", serif', fontSize: '20px', color: 'var(--white)', marginBottom: '6px' }}>
+                Get started with DFM Insights
+              </div>
+              <div style={{ fontSize: '13px', color: 'rgba(255,255,255,.45)', lineHeight: 1.65, marginBottom: '20px', maxWidth: '560px' }}>
+                Two ways to get started. Generate a PRD from scratch, or go straight to FMEA, project charter and build timeline if you already have a PRD.
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', maxWidth: '640px' }}>
+                <div style={{ background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.1)', borderRadius: '10px', padding: '18px' }}>
+                  <div style={{ fontSize: '24px', marginBottom: '8px' }}>📄</div>
+                  <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--white)', marginBottom: '4px' }}>PRD Generator</div>
+                  <div style={{ fontSize: '12px', color: 'rgba(255,255,255,.45)', lineHeight: 1.65, marginBottom: '14px' }}>
+                    Answer 12 questions. AI generates your complete PRD. 2 ECRs included. 1 project.
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontFamily: '"DM Mono", monospace', fontSize: '16px', fontWeight: 700, color: 'var(--amber)' }}>€9.90</span>
+                    <PurchaseButton pkg="prd" label="Get PRD Generator →" />
+                  </div>
+                </div>
+                <div style={{ background: 'rgba(232,164,59,.08)', border: '1px solid rgba(232,164,59,.25)', borderRadius: '10px', padding: '18px' }}>
+                  <div style={{ fontSize: '24px', marginBottom: '8px' }}>⚡</div>
+                  <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--white)', marginBottom: '4px' }}>AI Package</div>
+                  <div style={{ fontSize: '12px', color: 'rgba(255,255,255,.45)', lineHeight: 1.65, marginBottom: '14px' }}>
+                    FMEA report, project charter, and build timeline from your PRD and BOM. 5 ECRs included.
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontFamily: '"DM Mono", monospace', fontSize: '16px', fontWeight: 700, color: 'var(--amber)' }}>€49</span>
+                    <PurchaseButton pkg="ai" label="Get AI Package →" />
+                  </div>
+                </div>
+              </div>
             </div>
-            <PurchaseButton />
           </div>
         )}
 
-        {/* Paid confirmation */}
-        {isPaid && (
+        {/* Paid — PRD package banner */}
+        {isPaid && profile?.package === 'prd' && (
+          <div style={{ background: 'var(--amber-bg)', border: '1px solid var(--amber-border, #f0c878)', borderRadius: '10px', padding: '16px 20px', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontSize: '16px' }}>📄</span>
+              <span style={{ fontSize: '13px', color: 'var(--ink)' }}>
+                <strong>PRD Generator active</strong> — Generate your PRD below. Upgrade to AI Package for FMEA, charter and timeline.
+              </span>
+            </div>
+            <PurchaseButton pkg="ai" label="Upgrade to AI Package — €39.10 →" />
+          </div>
+        )}
+
+        {/* Paid — AI package banner */}
+        {isPaid && profile?.package === 'ai' && (
           <div style={{ background: 'var(--green-bg)', border: '1px solid var(--green-border, #b8ddc8)', borderRadius: '10px', padding: '12px 18px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <span style={{ fontSize: '16px' }}>✅</span>
             <span style={{ fontSize: '13px', color: 'var(--green)' }}>
-              <strong>AI Package active</strong> — Generate documents on any project below.
+              <strong>AI Package active</strong> — Generate FMEA, charter and timeline on any project. 5 ECRs included.
             </span>
           </div>
         )}
