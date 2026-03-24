@@ -59,7 +59,8 @@ function ECRSection({ projectId, outputs, maxECRs, ecrUsed, setOutputs }: {
     }
   }
 
-  const docOptions = outputs.map((o: any) => ({ type: o.type, label: { fmea: 'FMEA Report', charter: 'Project Charter', timeline: 'Build Timeline', prd: 'PRD' }[o.type] || o.type }))
+  const docLabels: Record<string, string> = { fmea: 'FMEA Report', charter: 'Project Charter', timeline: 'Build Timeline', prd: 'PRD' }
+  const docOptions = outputs.map((o: any) => ({ type: o.type, label: docLabels[o.type] || o.type }))
 
   return (
     <div style={{ background: 'var(--white)', border: '1px solid var(--border)', borderRadius: '12px', padding: '28px' }}>
