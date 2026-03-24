@@ -277,21 +277,25 @@ function PRDDoc({ content, project, date }: any) {
         <Text style={S.h2}>Value Proposition</Text>
         <Text style={S.summaryText}>{overview.value_proposition}</Text>
         {Object.entries(content.specifications || {}).map(([key, items]: any) => (
-          <View key={key} break={false} wrap={true} minPresenceAhead={40}>
-            <Text style={S.h2}>{key.charAt(0).toUpperCase() + key.slice(1)} Specifications</Text>
-            <View style={S.table}>
-              <View style={S.tableHead}>
-                {[['Parameter', 130], ['Requirement', 385]].map(([l, w]) => (
-                  <Text key={l as string} style={[S.th, { width: w as number }]}>{l}</Text>
-                ))}
-              </View>
-              {(items || []).map((item: any, i: number) => (
-                <View key={i} style={i % 2 === 0 ? S.tableRow : S.tableRowAlt} wrap={false}>
-                  <Text style={[S.td, { width: 130, fontFamily: "Helvetica-Bold" }]}>{sanitise(item.parameter)}</Text>
-                  <Text style={[S.td, { width: 385 }]}>{sanitise(item.requirement)}</Text>
-                </View>
+          <View key={key} style={S.table}>
+            {/* Section heading as first row — keeps heading with table on same page */}
+            <View style={{ backgroundColor: '#e8a43b', flexDirection: 'row' }}>
+              <Text style={[S.th, { width: 515, fontSize: 8, letterSpacing: 0.6 }]}>
+                {key.charAt(0).toUpperCase() + key.slice(1)} Specifications
+              </Text>
+            </View>
+            <View style={{ flexDirection: 'row', backgroundColor: '#2a2a2a' }}>
+              {[['Parameter', 130], ['Requirement', 385]].map(([l, w]) => (
+                <Text key={l as string} style={[S.th, { width: w as number }]}>{l}</Text>
               ))}
             </View>
+            {(items || []).map((item: any, i: number) => (
+              <View key={i} style={i % 2 === 0 ? S.tableRow : S.tableRowAlt} wrap={false}>
+                <Text style={[S.td, { width: 130, fontFamily: 'Helvetica-Bold' }]}>{sanitise(item.parameter)}</Text>
+                <Text style={[S.td, { width: 385 }]}>{sanitise(item.requirement)}</Text>
+              </View>
+            ))}
+            <View style={{ height: 10 }} />
           </View>
         ))}
         <View minPresenceAhead={60}>
