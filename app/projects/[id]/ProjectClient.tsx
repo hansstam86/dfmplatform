@@ -257,11 +257,19 @@ export default function ProjectClient({ project, outputs, paid, maxECRs, ecrUsed
               <p style={{ fontSize: '14px', color: 'var(--mid)', marginBottom: '24px', lineHeight: 1.7, maxWidth: '420px', margin: '0 auto 24px' }}>
                 Your project is set up and ready. Purchase the AI Package to generate your FMEA report, project charter, and build timeline.
               </p>
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '16px' }}>
-                <PurchaseButton />
-              </div>
-              <div style={{ fontSize: '12px', color: 'var(--mid)' }}>
-                €49 · One-time payment · 48h delivery · 5 ECRs included
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', maxWidth: '500px', margin: '0 auto 16px' }}>
+                <div style={{ background: 'var(--white)', border: '1px solid var(--border)', borderRadius: '10px', padding: '16px', textAlign: 'left' }}>
+                  <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--ink)', marginBottom: '4px' }}>📄 PRD Generator</div>
+                  <div style={{ fontSize: '11px', color: 'var(--mid)', lineHeight: 1.55, marginBottom: '12px' }}>Generate your PRD first. 2 revisions. 1 project.</div>
+                  <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '13px', fontWeight: 700, color: 'var(--amber)', marginBottom: '10px' }}>€9.90</div>
+                  <PurchaseButton pkg="prd" label="Get PRD Generator →" />
+                </div>
+                <div style={{ background: 'var(--amber-bg)', border: '1px solid #f0c878', borderRadius: '10px', padding: '16px', textAlign: 'left' }}>
+                  <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--ink)', marginBottom: '4px' }}>⚡ AI Package</div>
+                  <div style={{ fontSize: '11px', color: '#7a5c1a', lineHeight: 1.55, marginBottom: '12px' }}>FMEA, charter & timeline from your PRD. 5 revisions.</div>
+                  <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '13px', fontWeight: 700, color: '#a06c10', marginBottom: '10px' }}>€49</div>
+                  <PurchaseButton pkg="ai" label="Get AI Package →" />
+                </div>
               </div>
             </div>
           )
