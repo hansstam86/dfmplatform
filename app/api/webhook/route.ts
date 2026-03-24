@@ -24,6 +24,7 @@ export async function POST(req: NextRequest) {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
     const userId = session.metadata?.user_id
+    // Default to 'ai' — founding member Stripe link has no metadata
     const pkg = session.metadata?.package || 'ai'
     const isUpgrade = session.metadata?.is_upgrade === 'true'
 
