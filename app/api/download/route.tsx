@@ -111,7 +111,9 @@ function FMEADoc({ content, project, date }: any) {
         <Text style={S.summaryText}>{content.summary}</Text>
         {(content.subsystems || []).map((sub: any) => (
           <View key={sub.name}>
-            <Text style={S.h2}>{sub.name}</Text>
+            <View minPresenceAhead={60}>
+              <Text style={S.h2}>{sub.name}</Text>
+            </View>
             <View style={S.table}>
               <View style={S.tableHead}>
                 {[['ID',30],['Component',80],['Failure Mode',110],['Effect',100],['Cause',95],['S',18],['O',18],['D',18],['RPN',28],['Class',48],['Action',118]].map(([l,w]) => (
@@ -154,12 +156,12 @@ function CharterDoc({ content, project, date }: any) {
         <Header title={content.title} type="charter" project={project} date={date} />
         <Text style={S.summaryText}>{content.objective}</Text>
         <View style={S.twoCol}>
-          <View style={S.col}><Text style={S.h2}>In Scope</Text>{(content.scope_in || []).map((i: string, x: number) => <Li key={x} text={i} />)}</View>
+          <View style={S.col}><View minPresenceAhead={50}><Text style={S.h2}>In Scope</Text></View>{(content.scope_in || []).map((i: string, x: number) => <Li key={x} text={i} />)}</View>
           <View style={S.col}><Text style={S.h2}>Out of Scope</Text>{(content.scope_out || []).map((i: string, x: number) => <Li key={x} text={i} />)}</View>
         </View>
-        <Text style={S.h2}>Success Criteria</Text>
+        <View minPresenceAhead={50}><Text style={S.h2}>Success Criteria</Text></View>
         {(content.success_criteria || []).map((i: string, x: number) => <Li key={x} text={i} />)}
-        <Text style={S.h2}>Risks</Text>
+        <View minPresenceAhead={50}><Text style={S.h2}>Risks</Text></View>
         <View style={S.table}>
           <View style={S.tableHead}>
             {[['Risk',190],['Probability',60],['Impact',55],['Mitigation',200]].map(([l,w]) => <Text key={l as string} style={[S.th, { width: w as number }]}>{l}</Text>)}
@@ -173,7 +175,7 @@ function CharterDoc({ content, project, date }: any) {
             </View>
           ))}
         </View>
-        <Text style={S.h2}>RACI Matrix</Text>
+        <View minPresenceAhead={50}><Text style={S.h2}>RACI Matrix</Text></View>
         <View style={S.table}>
           <View style={S.tableHead}>
             {[['Activity',140],['Responsible',85],['Accountable',85],['Consulted',85],['Informed',85]].map(([l,w]) => <Text key={l as string} style={[S.th, { width: w as number }]}>{l}</Text>)}
@@ -275,7 +277,7 @@ function PRDDoc({ content, project, date }: any) {
         <Text style={S.h2}>Value Proposition</Text>
         <Text style={S.summaryText}>{overview.value_proposition}</Text>
         {Object.entries(content.specifications || {}).map(([key, items]: any) => (
-          <View key={key}>
+          <View key={key} break={false} wrap={true} minPresenceAhead={40}>
             <Text style={S.h2}>{key.charAt(0).toUpperCase() + key.slice(1)} Specifications</Text>
             <View style={S.table}>
               <View style={S.tableHead}>
@@ -292,7 +294,9 @@ function PRDDoc({ content, project, date }: any) {
             </View>
           </View>
         ))}
-        <Text style={S.h2}>Functional Requirements</Text>
+        <View minPresenceAhead={60}>
+          <Text style={S.h2}>Functional Requirements</Text>
+        </View>
         <View style={S.table}>
           <View style={S.tableHead}>
             {[["ID", 35], ["Category", 70], ["Requirement", 200], ["Priority", 55], ["Acceptance Criteria", 155]].map(([l, w]) => (
@@ -309,9 +313,13 @@ function PRDDoc({ content, project, date }: any) {
             </View>
           ))}
         </View>
-        <Text style={S.h2}>Out of Scope</Text>
+        <View minPresenceAhead={40}>
+          <Text style={S.h2}>Out of Scope</Text>
+        </View>
         {(content.out_of_scope || []).map((i: string, x: number) => <Li key={x} text={i} />)}
-        <Text style={S.h2}>Open Questions</Text>
+        <View minPresenceAhead={40}>
+          <Text style={S.h2}>Open Questions</Text>
+        </View>
         {(content.open_questions || []).map((i: string, x: number) => <Li key={x} text={i} />)}
         <Footer />
       </Page>
