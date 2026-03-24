@@ -3,23 +3,31 @@ import { useState } from 'react'
 import { createClient } from '@/lib/supabase'
 
 
-function PurchaseButton() {
+function PurchaseButton({ pkg = 'ai', label }: { pkg?: string, label?: string }) {
   const [loading, setLoading] = useState(false)
   async function handlePurchase() {
     setLoading(true)
     try {
-      const res = await fetch('/api/checkout', { method: 'POST' })
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ package: pkg }),
+      })
       const data = await res.json()
       if (data.url) window.location.href = data.url
+      else setLoading(false)
     } catch { setLoading(false) }
   }
+  const defaultLabel = pkg === 'prd' ? '📄 Get PRD Generator — €9.90' : '⚡ Purchase AI Package — €49'
   return (
     <button onClick={handlePurchase} disabled={loading} style={{
-      background: 'var(--ink)', color: 'var(--white)', padding: '14px 32px',
-      borderRadius: '8px', fontSize: '15px', fontWeight: 700, border: 'none', cursor: 'pointer',
+      width: '100%', background: pkg === 'prd' ? 'var(--ink)' : 'var(--amber)',
+      color: pkg === 'prd' ? 'var(--white)' : 'var(--ink)',
+      padding: '10px 16px', borderRadius: '7px', fontSize: '13px',
+      fontWeight: 700, border: 'none', cursor: 'pointer',
       opacity: loading ? 0.7 : 1
     }}>
-      {loading ? 'Redirecting to payment…' : '⚡ Purchase AI Package — €49'}
+      {loading ? 'Redirecting…' : (label || defaultLabel)}
     </button>
   )
 }
