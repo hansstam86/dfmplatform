@@ -274,7 +274,7 @@ function PRDDoc({ content, project, date }: any) {
                 <View key={i} style={i % 2 === 0 ? S.tableRow : S.tableRowAlt} wrap={false}>
                   <Text style={[S.td, { width: 100, fontFamily: "Helvetica-Bold" }]}>{item.parameter}</Text>
                   <Text style={[S.td, { width: 195 }]}>{item.requirement}</Text>
-                  <Text style={[S.tdMid, { width: 220 }]}>{item.rationale}</Text>
+                  <Text style={[S.tdMid, { width: 220 }]} numberOfLines={3}>{item.rationale}</Text>
                 </View>
               ))}
             </View>
@@ -293,7 +293,7 @@ function PRDDoc({ content, project, date }: any) {
               <Text style={[S.td, { width: 70 }]}>{r.category}</Text>
               <Text style={[S.td, { width: 200 }]}>{r.requirement}</Text>
               <Text style={[S.tdCenter, { width: 55 }]}>{r.priority}</Text>
-              <Text style={[S.tdMid, { width: 155 }]}>{r.acceptance_criteria}</Text>
+              <Text style={[S.tdMid, { width: 155 }]} numberOfLines={3}>{r.acceptance_criteria}</Text>
             </View>
           ))}
         </View>
