@@ -266,15 +266,14 @@ function PRDDoc({ content, project, date }: any) {
             <Text style={S.h2}>{key.charAt(0).toUpperCase() + key.slice(1)} Specifications</Text>
             <View style={S.table}>
               <View style={S.tableHead}>
-                {[['Parameter', 100], ['Requirement', 195], ['Rationale', 220]].map(([l, w]) => (
+                {[['Parameter', 130], ['Requirement', 385]].map(([l, w]) => (
                   <Text key={l as string} style={[S.th, { width: w as number }]}>{l}</Text>
                 ))}
               </View>
               {(items || []).map((item: any, i: number) => (
                 <View key={i} style={i % 2 === 0 ? S.tableRow : S.tableRowAlt} wrap={false}>
-                  <Text style={[S.td, { width: 100, fontFamily: "Helvetica-Bold" }]}>{item.parameter}</Text>
-                  <Text style={[S.td, { width: 195 }]}>{item.requirement}</Text>
-                  <Text style={[S.tdMid, { width: 220 }]} numberOfLines={3}>{item.rationale}</Text>
+                  <Text style={[S.td, { width: 130, fontFamily: "Helvetica-Bold" }]}>{item.parameter}</Text>
+                  <Text style={[S.td, { width: 385 }]}>{item.requirement}</Text>
                 </View>
               ))}
             </View>
@@ -293,7 +292,7 @@ function PRDDoc({ content, project, date }: any) {
               <Text style={[S.td, { width: 70 }]}>{r.category}</Text>
               <Text style={[S.td, { width: 200 }]}>{r.requirement}</Text>
               <Text style={[S.tdCenter, { width: 55 }]}>{r.priority}</Text>
-              <Text style={[S.tdMid, { width: 155 }]} numberOfLines={3}>{r.acceptance_criteria}</Text>
+              <Text style={[S.tdMid, { width: 155 }]}>{r.acceptance_criteria}</Text>
             </View>
           ))}
         </View>
