@@ -242,6 +242,19 @@ function TimelineDoc({ content, project, date }: any) {
 }
 
 
+
+function sanitise(text: any): string {
+  if (!text) return ''
+  return String(text)
+    .replace(/≤/g, '<=')
+    .replace(/≥/g, '>=')
+    .replace(/°/g, 'deg')
+    .replace(/±/g, '+/-')
+    .replace(/×/g, 'x')
+    .replace(/µ/g, 'u')
+    .replace(/[^ -]/g, '')  // strip any remaining non-ASCII
+}
+
 function PRDDoc({ content, project, date }: any) {
   const overview = content.overview || {}
   return (
@@ -272,8 +285,8 @@ function PRDDoc({ content, project, date }: any) {
               </View>
               {(items || []).map((item: any, i: number) => (
                 <View key={i} style={i % 2 === 0 ? S.tableRow : S.tableRowAlt} wrap={false}>
-                  <Text style={[S.td, { width: 130, fontFamily: "Helvetica-Bold" }]}>{item.parameter}</Text>
-                  <Text style={[S.td, { width: 385 }]}>{item.requirement}</Text>
+                  <Text style={[S.td, { width: 130, fontFamily: "Helvetica-Bold" }]}>{sanitise(item.parameter)}</Text>
+                  <Text style={[S.td, { width: 385 }]}>{sanitise(item.requirement)}</Text>
                 </View>
               ))}
             </View>
@@ -290,9 +303,9 @@ function PRDDoc({ content, project, date }: any) {
             <View key={i} style={i % 2 === 0 ? S.tableRow : S.tableRowAlt} wrap={false}>
               <Text style={[S.tdMono, { width: 35 }]}>{r.id}</Text>
               <Text style={[S.td, { width: 70 }]}>{r.category}</Text>
-              <Text style={[S.td, { width: 200 }]}>{r.requirement}</Text>
+              <Text style={[S.td, { width: 200 }]}>{sanitise(r.requirement)}</Text>
               <Text style={[S.tdCenter, { width: 55 }]}>{r.priority}</Text>
-              <Text style={[S.tdMid, { width: 155 }]}>{r.acceptance_criteria}</Text>
+              <Text style={[S.tdMid, { width: 155 }]}>{sanitise(r.acceptance_criteria)}</Text>
             </View>
           ))}
         </View>
