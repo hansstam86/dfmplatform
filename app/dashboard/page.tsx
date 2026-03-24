@@ -42,38 +42,42 @@ export default async function DashboardPage() {
       <div style={{ maxWidth: '900px', margin: '0 auto', padding: '48px 40px' }}>
         {/* Upgrade banner for unpaid users */}
         {!isPaid && (
-          <div style={{ marginBottom: '24px' }}>
-            <div style={{ background: 'var(--ink)', borderRadius: '12px', padding: '24px 28px', marginBottom: '12px' }}>
-              <div style={{ fontFamily: '"Instrument Serif", serif', fontSize: '20px', color: 'var(--white)', marginBottom: '6px' }}>
-                Get started with DFM Insights
-              </div>
-              <div style={{ fontSize: '13px', color: 'rgba(255,255,255,.45)', lineHeight: 1.65, marginBottom: '20px', maxWidth: '560px' }}>
-                Two ways to get started. Generate a PRD from scratch, or go straight to FMEA, project charter and build timeline if you already have a PRD.
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', maxWidth: '640px' }}>
-                <div style={{ background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.1)', borderRadius: '10px', padding: '18px' }}>
-                  <div style={{ fontSize: '24px', marginBottom: '8px' }}>📄</div>
-                  <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--white)', marginBottom: '4px' }}>PRD Generator</div>
-                  <div style={{ fontSize: '12px', color: 'rgba(255,255,255,.45)', lineHeight: 1.65, marginBottom: '14px' }}>
-                    Answer 12 questions. AI generates your complete PRD. 2 ECRs included. 1 project.
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ fontFamily: '"DM Mono", monospace', fontSize: '16px', fontWeight: 700, color: 'var(--amber)' }}>€9.90</span>
-                    <PurchaseButton pkg="prd" label="Get PRD Generator →" />
+          <div style={{ marginBottom: '28px' }}>
+            <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '10px', letterSpacing: '.18em', textTransform: 'uppercase', color: 'var(--light)', marginBottom: '14px' }}>
+              Get started
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+
+              {/* PRD Generator card */}
+              <div style={{ background: 'var(--white)', border: '1px solid var(--border)', borderRadius: '12px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'var(--cream)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>📄</div>
+                  <div>
+                    <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--ink)' }}>PRD Generator</div>
+                    <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '11px', color: 'var(--amber)', fontWeight: 600 }}>€9.90</div>
                   </div>
                 </div>
-                <div style={{ background: 'rgba(232,164,59,.08)', border: '1px solid rgba(232,164,59,.25)', borderRadius: '10px', padding: '18px' }}>
-                  <div style={{ fontSize: '24px', marginBottom: '8px' }}>⚡</div>
-                  <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--white)', marginBottom: '4px' }}>AI Package</div>
-                  <div style={{ fontSize: '12px', color: 'rgba(255,255,255,.45)', lineHeight: 1.65, marginBottom: '14px' }}>
-                    FMEA report, project charter, and build timeline from your PRD and BOM. 5 ECRs included.
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ fontFamily: '"DM Mono", monospace', fontSize: '16px', fontWeight: 700, color: 'var(--amber)' }}>€49</span>
-                    <PurchaseButton pkg="ai" label="Get AI Package →" />
+                <p style={{ fontSize: '13px', color: 'var(--mid)', lineHeight: 1.65, margin: 0 }}>
+                  Answer 12 questions and AI generates your complete Product Requirements Document. Includes 2 revisions. 1 project.
+                </p>
+                <PurchaseButton pkg="prd" label="Get PRD Generator →" />
+              </div>
+
+              {/* AI Package card */}
+              <div style={{ background: 'var(--amber-bg)', border: '1px solid var(--amber-border, #f0c878)', borderRadius: '12px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(232,164,59,.2)', border: '1px solid var(--amber-border, #f0c878)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>⚡</div>
+                  <div>
+                    <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--ink)' }}>AI Package</div>
+                    <div style={{ fontFamily: '"DM Mono", monospace', fontSize: '11px', color: '#a06c10', fontWeight: 600 }}>€49</div>
                   </div>
                 </div>
+                <p style={{ fontSize: '13px', color: '#7a5c1a', lineHeight: 1.65, margin: 0 }}>
+                  FMEA report, project charter, and EVT/DVT/PVT build timeline — generated from your PRD and BOM. Includes 5 revisions.
+                </p>
+                <PurchaseButton pkg="ai" label="Get AI Package →" />
               </div>
+
             </div>
           </div>
         )}
