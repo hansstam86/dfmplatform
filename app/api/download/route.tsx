@@ -65,7 +65,7 @@ function Li({ text }: { text: string }) {
   return (
     <View style={S.listItem} wrap={false}>
       <Text style={S.bullet}>—</Text>
-      <Text style={[S.listText, { flexShrink: 1, flexWrap: 'wrap' }]}>{text}</Text>
+      <Text style={S.listText}>{text}</Text>
     </View>
   )
 }
@@ -266,15 +266,15 @@ function PRDDoc({ content, project, date }: any) {
             <Text style={S.h2}>{key.charAt(0).toUpperCase() + key.slice(1)} Specifications</Text>
             <View style={S.table}>
               <View style={S.tableHead}>
-                {[['Parameter', 120], ['Requirement', 180], ['Rationale', 215]].map(([l, w]) => (
+                {[['Parameter', 100], ['Requirement', 195], ['Rationale', 220]].map(([l, w]) => (
                   <Text key={l as string} style={[S.th, { width: w as number }]}>{l}</Text>
                 ))}
               </View>
               {(items || []).map((item: any, i: number) => (
                 <View key={i} style={i % 2 === 0 ? S.tableRow : S.tableRowAlt} wrap={false}>
-                  <Text style={[S.td, { width: 120, fontFamily: "Helvetica-Bold" }]}>{item.parameter}</Text>
-                  <Text style={[S.td, { width: 180 }]}>{item.requirement}</Text>
-                  <Text style={[S.tdMid, { width: 215 }]}>{item.rationale}</Text>
+                  <Text style={[S.td, { width: 100, fontFamily: "Helvetica-Bold" }]}>{item.parameter}</Text>
+                  <Text style={[S.td, { width: 195 }]}>{item.requirement}</Text>
+                  <Text style={[S.tdMid, { width: 220 }]}>{item.rationale}</Text>
                 </View>
               ))}
             </View>
