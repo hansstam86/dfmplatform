@@ -19,7 +19,7 @@ function PurchaseButton() {
       borderRadius: '8px', fontSize: '15px', fontWeight: 700, border: 'none', cursor: 'pointer',
       opacity: loading ? 0.7 : 1
     }}>
-      {loading ? 'Redirecting to payment…' : '⚡ Purchase AI Package — €499'}
+      {loading ? 'Redirecting to payment…' : '⚡ Purchase AI Package — €49'}
     </button>
   )
 }
@@ -261,7 +261,7 @@ export default function ProjectClient({ project, outputs, paid, maxECRs, ecrUsed
                 <PurchaseButton />
               </div>
               <div style={{ fontSize: '12px', color: 'var(--mid)' }}>
-                €499 · One-time payment · 48h delivery · 10 refinement questions included
+                €49 · One-time payment · 48h delivery · 5 ECRs included
               </div>
             </div>
           )
