@@ -241,6 +241,78 @@ function TimelineDoc({ content, project, date }: any) {
   )
 }
 
+
+function PRDDoc({ content, project, date }: any) {
+  const overview = content.overview || {}
+  return (
+    <Document>
+      <Page size="A4" style={S.page}>
+        <Header title={content.title} type="prd" project={project} date={date} />
+        <Text style={S.summaryText}>{overview.summary}</Text>
+        <View style={S.twoCol}>
+          <View style={S.col}>
+            <Text style={S.h2}>Problem Statement</Text>
+            <Text style={[S.summaryText, { marginBottom: 0 }]}>{overview.problem_statement}</Text>
+          </View>
+          <View style={S.col}>
+            <Text style={S.h2}>Target User</Text>
+            <Text style={[S.summaryText, { marginBottom: 0 }]}>{overview.target_user}</Text>
+          </View>
+        </View>
+        <Text style={S.h2}>Value Proposition</Text>
+        <Text style={S.summaryText}>{overview.value_proposition}</Text>
+        {Object.entries(content.specifications || {}).map(([key, items]: any) => (
+          <View key={key}>
+            <Text style={S.h2}>{key.charAt(0).toUpperCase() + key.slice(1)} Specifications</Text>
+            <View style={S.table}>
+              <View style={S.tableHead}>
+                {[['Parameter', 120], ['Requirement', 180], ['Rationale', 215]].map(([l, w]) => (
+                  <Text key={l as string} style={[S.th, { width: w as number }]}>{l}</Text>
+                ))}
+              </View>
+              {(items || []).map((item: any, i: number) => (
+                <View key={i} style={i % 2 === 0 ? S.tableRow : S.tableRowAlt} wrap={false}>
+                  <Text style={[S.td, { width: 120, fontFamily: "Helvetica-Bold" }]}>{item.parameter}</Text>
+                  <Text style={[S.td, { width: 180 }]}>{item.requirement}</Text>
+                  <Text style={[S.tdMid, { width: 215 }]}>{item.rationale}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        ))}
+        <Text style={S.h2}>Functional Requirements</Text>
+        <View style={S.table}>
+          <View style={S.tableHead}>
+            {[["ID", 35], ["Category", 70], ["Requirement", 200], ["Priority", 55], ["Acceptance Criteria", 155]].map(([l, w]) => (
+              <Text key={l as string} style={[S.th, { width: w as number }]}>{l}</Text>
+            ))}
+          </View>
+          {(content.functional_requirements || []).map((r: any, i: number) => (
+            <View key={i} style={i % 2 === 0 ? S.tableRow : S.tableRowAlt} wrap={false}>
+              <Text style={[S.tdMono, { width: 35 }]}>{r.id}</Text>
+              <Text style={[S.td, { width: 70 }]}>{r.category}</Text>
+              <Text style={[S.td, { width: 200 }]}>{r.requirement}</Text>
+              <Text style={[S.tdCenter, { width: 55 }]}>{r.priority}</Text>
+              <Text style={[S.tdMid, { width: 155 }]}>{r.acceptance_criteria}</Text>
+            </View>
+          ))}
+        </View>
+        <View style={S.twoCol}>
+          <View style={S.col}>
+            <Text style={S.h2}>Out of Scope</Text>
+            {(content.out_of_scope || []).map((i: string, x: number) => <Li key={x} text={i} />)}
+          </View>
+          <View style={S.col}>
+            <Text style={S.h2}>Open Questions</Text>
+            {(content.open_questions || []).map((i: string, x: number) => <Li key={x} text={i} />)}
+          </View>
+        </View>
+        <Footer />
+      </Page>
+    </Document>
+  )
+}
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url)
@@ -265,10 +337,11 @@ export async function GET(req: NextRequest) {
     const content = output.content
     const project = (output as any).projects
     const date = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
-    const labels: any = { fmea: 'FMEA-Report', charter: 'Project-Charter', timeline: 'Build-Timeline' }
+    const labels: any = { prd: 'PRD', fmea: 'FMEA-Report', charter: 'Project-Charter', timeline: 'Build-Timeline' }
 
     let pdfDoc: any
-    if (type === 'fmea') pdfDoc = React.createElement(FMEADoc, { content, project, date })
+    if (type === 'prd') pdfDoc = React.createElement(PRDDoc, { content, project, date })
+    else if (type === 'fmea') pdfDoc = React.createElement(FMEADoc, { content, project, date })
     else if (type === 'charter') pdfDoc = React.createElement(CharterDoc, { content, project, date })
     else pdfDoc = React.createElement(TimelineDoc, { content, project, date })
 
