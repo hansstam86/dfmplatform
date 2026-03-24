@@ -83,7 +83,7 @@ export default async function DashboardPage() {
         )}
 
         {/* Paid — PRD package banner */}
-        {isPaid && profile?.package === 'prd' && (
+        {isPaid && profileData?.package === 'prd' && (
           <div style={{ background: 'var(--amber-bg)', border: '1px solid var(--amber-border, #f0c878)', borderRadius: '10px', padding: '16px 20px', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <span style={{ fontSize: '16px' }}>📄</span>
@@ -96,7 +96,7 @@ export default async function DashboardPage() {
         )}
 
         {/* Paid — AI package banner */}
-        {isPaid && profile?.package === 'ai' && (
+        {isPaid && profileData?.package === 'ai' && (
           <div style={{ background: 'var(--green-bg)', border: '1px solid var(--green-border, #b8ddc8)', borderRadius: '10px', padding: '12px 18px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <span style={{ fontSize: '16px' }}>✅</span>
             <span style={{ fontSize: '13px', color: 'var(--green)' }}>
@@ -114,12 +114,27 @@ export default async function DashboardPage() {
             </p>
           </div>
           {projectCount < maxProjects ? (
-            <a href="/projects/new" style={{
-              background: 'var(--amber)', color: 'var(--ink)', padding: '11px 22px',
-              borderRadius: '8px', fontSize: '14px', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '6px'
-            }}>
-              + New Project
-            </a>
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              {(isPaid && (profileData?.package === 'prd' || profileData?.package === 'ai')) && (
+                <a href="/projects/new-prd" style={{
+                  background: 'var(--white)', color: 'var(--ink)', padding: '11px 22px',
+                  borderRadius: '8px', fontSize: '14px', fontWeight: 600,
+                  border: '1px solid var(--border)', display: 'inline-flex', alignItems: 'center', gap: '6px',
+                  textDecoration: 'none'
+                }}>
+                  📄 Generate PRD
+                </a>
+              )}
+              {isPaid && profileData?.package === 'ai' && (
+                <a href="/projects/new" style={{
+                  background: 'var(--amber)', color: 'var(--ink)', padding: '11px 22px',
+                  borderRadius: '8px', fontSize: '14px', fontWeight: 700,
+                  display: 'inline-flex', alignItems: 'center', gap: '6px', textDecoration: 'none'
+                }}>
+                  ⚡ New Project
+                </a>
+              )}
+            </div>
           ) : (
             <div style={{ fontSize: '13px', color: 'var(--mid)', padding: '11px 16px', background: 'var(--white)', border: '1px solid var(--border)', borderRadius: '8px' }}>
               5/5 projects used · <a href="mailto:hans.stam@gmail.com?subject=More projects" style={{ color: 'var(--amber)', fontWeight: 600 }}>Contact Hans for more</a>
